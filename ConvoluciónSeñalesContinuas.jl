@@ -4,8 +4,20 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    return quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
 # ╔═╡ 1710bc0e-d98c-11f1-9cf7-d1652fd99701
-using Plots, SymPy
+using Plots, SymPy, PlutoUI
 
 # ╔═╡ 288e7aed-bf9f-488a-a56a-50fa227e6c84
 x, y, t, τ = symbols("x y t τ", real = true)
@@ -94,14 +106,81 @@ begin
 	plot!(t5, y3.(t5))
 end
 
+# ╔═╡ 898a9535-d30b-403a-aa15-f6279f927855
+#####################################################################################
+
+# ╔═╡ e8c37c63-b4d1-4785-8653-7aa426c96676
+#ANIMACION DE CONVOLUCION
+
+# ╔═╡ 60343f43-32d9-4b89-a6a5-4ef54bc31bf2
+yC(t) = 0 < t < 3 ? y1(t) : 3 < t < 6 ? y2(t) : 6 < t < 9 ? y3(t) : 0
+
+# ╔═╡ 3cbd22b2-5fd6-41ce-b57d-ff257a64182a
+begin
+	τs = range(-7, 10, 1000) #Eje horizontal
+	ts  = range(-1, 10, 1000) #Como se desplaza a travez del tiempo
+	yCalculado = yC.(ts)
+end
+
+# ╔═╡ 39e9d4cf-7bfa-4c71-b7a4-6ee741e3c6fb
+function areaConvolucion(tiempo)
+	xτ = x1.(τs)    
+	hRD = h1.(tiempo .- τs) 
+	producto = xτ .* hRD #x(τ) * h(t - τ)
+	area  = sum(producto) * step(τs) #Area, suma de Riemann
+
+	#Primera grafica, superposicion
+	plot(τs, xτ, lw = 2, label = "x(τ)")
+	p1 = plot!(τs, hRD, lw = 2, xlims = (-8, 10), ylims = (-1, 7), label = "h(t - τ)")
+
+	#Segunda grafica, area resultante
+	p2 = plot(τs, producto, fillrange = 0, fillalpha = 0.5, color = :purple, lw = 2, xlims = (-1, 4), ylims = (-1, 9), title = "Area y(t) = $(round(area, digits = 2))", label = "Area superoposición")
+ 
+	#Tercera grafica, resultado de convolucion
+	condicion = ts .<= tiempo #Verifica si cumple, si cumple grafica, si no, no
+	p3 = plot(ts[condicion], yCalculado[condicion], color = :green, lw = 2, label = "y(t) construida", xlims = (-1, 10), ylims = (-1, 17))
+ 
+	return plot(p1, p2, p3, layout = (2, 2), size = (800, 600))
+end
+
+# ╔═╡ 335e2692-ddec-4b72-b446-5ce424e46273
+@bind tiempo Slider(-1:0.1:10, show_value = true)
+
+# ╔═╡ 92cf3d1b-fc32-4c7c-a7e3-cbdbe25cf394
+areaConvolucion(tiempo)
+
+# ╔═╡ 1eee3768-7f67-4f07-8442-e3543846e975
+begin
+	tiempoVideo = 10
+	fps = 60
+	frames = tiempoVideo * fps
+	dt = tiempoVideo / frames
+	tsVideo = range(0, tiempoVideo, step = dt)
+end
+
+# ╔═╡ 8120a2e3-367c-4666-afb9-2327c0b8fb4e
+begin
+	anim = Plots.Animation()
+ 
+	for tiempo in tsVideo
+		p = areaConvolucion(tiempo)
+		Plots.frame(anim, p)
+	end
+end
+
+# ╔═╡ 57fb9ee3-6e13-417e-99c6-c098ac4e99d7
+mp4(anim, "convolucion.mp4", fps = fps)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
 
 [compat]
 Plots = "~1.41.7"
+PlutoUI = "~0.7.83"
 SymPy = "~2.3.4"
 """
 
@@ -111,7 +190,13 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.13.3"
 manifest_format = "2.1"
-project_hash = "a17c1c70b048e2e8ccf27b6e0ca031a95d64288c"
+project_hash = "5b5ce153290b599870cd69f0138e5697faf7ef9b"
+
+[[deps.AbstractPlutoDingetjes]]
+git-tree-sha1 = "e71ee7b4aa06b045259a7d6101e1cb45ad140bce"
+registries = "General"
+uuid = "6e696c72-6542-2067-7265-42206c756150"
+version = "1.4.1"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -384,6 +469,27 @@ registries = "General"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "100.14004.0+0"
 
+[[deps.Hyperscript]]
+deps = ["Test"]
+git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
+registries = "General"
+uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+version = "0.0.5"
+
+[[deps.HypertextLiteral]]
+deps = ["Tricks"]
+git-tree-sha1 = "d1a86724f81bcd184a38fd284ce183ec067d71a0"
+registries = "General"
+uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
+version = "1.0.0"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "0ee181ec08df7d7c911901ea38baf16f755114dc"
+registries = "General"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "1.0.0"
+
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
@@ -579,6 +685,12 @@ version = "1.0.3"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
+[[deps.MIMEs]]
+git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
+registries = "General"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "1.1.0"
+
 [[deps.MacroTools]]
 git-tree-sha1 = "1e0228a030642014fe5cfe68c2c0a818f9e3f522"
 registries = "General"
@@ -733,6 +845,13 @@ version = "1.41.7"
     IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[[deps.PlutoUI]]
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "e189d0623e7ce9c37389bac17e80aac3b0302e75"
+registries = "General"
+uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+version = "0.7.83"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
@@ -1001,6 +1120,19 @@ version = "2.0.1"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
+
+[[deps.Tricks]]
+git-tree-sha1 = "311349fd1c93a31f783f977a71e8b062a57d4101"
+registries = "General"
+uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
+version = "0.1.13"
+
+[[deps.URIs]]
+deps = ["Serialization"]
+git-tree-sha1 = "eb3b85ca904a1d1647b15acc091b113b8874b648"
+registries = "General"
+uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+version = "1.7.3"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -1386,5 +1518,15 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 # ╠═b8d45350-a4b3-414c-aaa4-9cc67d8a46e2
 # ╠═a5cc7ab8-67c2-4e0e-a455-0476f130ccd5
 # ╠═edaa68a2-9700-4c25-a4fa-2b3e24c5b86f
+# ╠═898a9535-d30b-403a-aa15-f6279f927855
+# ╠═e8c37c63-b4d1-4785-8653-7aa426c96676
+# ╠═60343f43-32d9-4b89-a6a5-4ef54bc31bf2
+# ╠═3cbd22b2-5fd6-41ce-b57d-ff257a64182a
+# ╠═39e9d4cf-7bfa-4c71-b7a4-6ee741e3c6fb
+# ╠═335e2692-ddec-4b72-b446-5ce424e46273
+# ╠═92cf3d1b-fc32-4c7c-a7e3-cbdbe25cf394
+# ╠═1eee3768-7f67-4f07-8442-e3543846e975
+# ╠═8120a2e3-367c-4666-afb9-2327c0b8fb4e
+# ╠═57fb9ee3-6e13-417e-99c6-c098ac4e99d7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
