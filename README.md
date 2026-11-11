@@ -9,11 +9,9 @@ Universidad de Cuenca, Facultad de Ingeniería
 
 ## Descripción
 
-Programa en **Julia** (notebook de [Pluto.jl](https://plutojl.org/)) que calcula y visualiza la convolución
+Programa en **Julia** (notebook de [Pluto.jl](https://plutojl.org/)) que calcula y visualiza la convolución entre dos señales en tiempo continuo.
 
-$$y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau$$
-
-entre dos señales en tiempo continuo.
+$$y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\ * h(t-\tau)\ d\tau$$
 
 El programa muestra cómo `h(t - τ)` (la señal reflejada) se desplaza sobre `x(τ)` y cómo se va construyendo progresivamente la señal de salida `y(t)`.
 
