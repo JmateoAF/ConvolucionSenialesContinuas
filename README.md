@@ -11,13 +11,19 @@ Universidad de Cuenca, Facultad de Ingeniería
 
 Programa en **Julia** (notebook de [Pluto.jl](https://plutojl.org/)) que calcula y visualiza la convolución
 
-$$y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau$$
+```math
+y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau
+```
 
 entre dos señales en tiempo continuo, con $T = 3$:
 
-$$x(t)=\begin{cases}1, & 0<t<T\\ 0, & \text{otro valor}\end{cases}
-\qquad
-h(t)=\begin{cases}t, & 0<t<2T\\ 0, & \text{otro valor}\end{cases}$$
+```math
+x(t)=\begin{cases}1, & 0<t<T \\ 0, & \text{otro valor}\end{cases}
+```
+ 
+```math
+h(t)=\begin{cases}t, & 0<t<2T \\ 0, & \text{otro valor}\end{cases}
+```
 
 El programa muestra cómo `h(t - τ)` (la señal reflejada) se desplaza sobre `x(τ)` y cómo se va construyendo progresivamente la señal de salida `y(t)`.
 
@@ -47,8 +53,8 @@ El valor máximo es y(6) = 13.5.
 
 La interfaz tiene tres gráficas que cambian al mover el slider de `t`:
 
-- **Superposición:** `x(τ)` y `h(t-τ)` juntas.
-- **Producto:** `x(τ)·h(t-τ)` con el área sombreada. Esa área es el valor de `y(t)` en ese instante, calculada numéricamente con una suma de Riemann.
+- **Superposición:** `x(τ)` y `h(t - τ)` juntas.
+- **Producto:** `x(τ)·h(t - τ)` con el área sombreada. Esa área es el valor de `y(t)` en ese instante, calculada numéricamente con una suma de Riemann.
 - **Salida:** `y(t)` construida hasta el valor actual de `t`.
 
 ## Cómo ejecutarlo
