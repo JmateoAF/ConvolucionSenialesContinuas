@@ -113,7 +113,7 @@ end
 #ANIMACION DE CONVOLUCION
 
 # ╔═╡ 60343f43-32d9-4b89-a6a5-4ef54bc31bf2
-yC(t) = 0 < t < 3 ? y1(t) : 3 < t < 6 ? y2(t) : 6 < t < 9 ? y3(t) : 0
+yC(t) = 0 < t < 3 ? y1(t) : 3 < t < 6 ? y2(t) : 6 < t < 9 ? y3(t) : 0 #Señal resultante
 
 # ╔═╡ 3cbd22b2-5fd6-41ce-b57d-ff257a64182a
 begin
