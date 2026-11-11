@@ -1,6 +1,6 @@
 # Convolución de señales en tiempo continuo
 
-**Trabajo 1 – Sistemas Lineales y Señales**
+**Trabajo 1 – Sistemas Lineales y Señales**  
 Universidad de Cuenca, Facultad de Ingeniería
 
 **Autor:** Jostin Aucancela
@@ -9,21 +9,17 @@ Universidad de Cuenca, Facultad de Ingeniería
 
 ## Descripción
 
-Programa en **Julia** (notebook de [Pluto.jl](https://plutojl.org/)) que calcula y visualiza la convolución
+Programa en **Julia** (notebook de [Pluto.jl](https://plutojl.org/)) que calcula y visualiza la convolución:
 
 ```math
-y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau
+y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau* h(t) = \int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau
 ```
 
 entre dos señales en tiempo continuo, con $T = 3$:
 
-```math
-x(t)=\begin{cases}1, & 0<t<T \\ 0, & \text{otro valor}\end{cases}
-```
+x(\tau) = \begin{cases} 1, & 0 < \tau < T \\ 0, & \text{otro valor} \end{cases}
  
-```math
-h(t)=\begin{cases}t, & 0<t<2T \\ 0, & \text{otro valor}\end{cases}
-```
+h(t-\tau) = \begin{cases} t - \tau, & 0 < t - \tau < 2T \\ 0, & \text{otro valor} \end{cases}
 
 El programa muestra cómo `h(t - τ)` (la señal reflejada) se desplaza sobre `x(τ)` y cómo se va construyendo progresivamente la señal de salida `y(t)`.
 
